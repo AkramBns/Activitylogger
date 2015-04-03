@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>W2UI Demo: combo-1</title>
+    <link rel="stylesheet" type="text/css" href="http://w2ui.com/src/w2ui-1.4.2.min.css" />
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/2.1.0/jquery.min.js"></script>
+    <script type="text/javascript" src="http://w2ui.com/src/w2ui-1.4.2.min.js"></script>
+    <style>
+#header {
+    background-color:black;
+    color:white;
+    text-align:center;
+    padding:5px;
+}
+#main {
+    width:350px;
+    float:left;
+    padding:10px;	 	 
+}
+#footer {
+    background-color:black;
+    color:white;
+    clear:both;
+    text-align:center;
+   padding:5px;	 	 
+}
+</style>
+</head>
+<body>
+
+<div id="header">
+	<h1>City Gallery</h1>
+</div>
+<div id="main" style="width: 100%; height: 400px;"></div>
+<div id="footer">
+	Copyright © W3Schools.com
+</div>
+
+<script type="text/javascript">
+// widget configuration
+var config = {
+    layout: {
+        name: 'layout',
+        padding: 0,
+        panels: [
+            { type: 'left', size: 200, resizable: true, minSize: 120 },
+            { type: 'main', minSize: 550, overflow: 'hidden' }
+        ]
+    },
+    sidebar: {
+        name: 'sidebar',
+        nodes: [ 
+            { id: 'general', text: 'General', group: true, expanded: true, nodes: [
+                { id: 'grid1', text: 'Grid 1', img: 'icon-page', selected: true },
+                { id: 'grid2', text: 'Grid 2', img: 'icon-page' },
+                { id: 'html', text: 'Some HTML', img: 'icon-page' }
+            ]}
+        ],
+        onClick: function (event) {
+
+        	 $.getJSON('./rest/Logs/category/' + event.target, function (elements) {
+        		 w2ui.grid1.records = elements.records;
+        		 w2ui.grid1.columns = elements.columns;
+        		 w2ui.grid1.searches = elements.columns; 
+        		 
+        		 w2ui.layout.content('main', w2ui.grid1);
+             });
+        }
+    },
+    grid1: { 
+        name: 'grid1',
+        show: {
+            header         : true,
+            toolbar     : true,
+            footer        : true,
+            lineNumbers    : true,
+            selectColumn: true,
+            expandColumn: true
+        },        
+        multiSearch: true,
+        searches: [],
+        columns: [],
+        records: []
+        , onExpand: function (event) {
+            $('#'+event.box_id).html('<div style="padding: 10px"> ' +  this.records[event.recid].details + '</div>').animate({ 'height': 100 }, 100);
+        }
+    }
+}
+
+$(function () {
+    // initialization
+      $.getJSON('./rest/Logs/categories', function (projects) {
+    	  config.sidebar.nodes=projects;
+    	  $('#main').w2layout(config.layout);
+  	   	 w2ui.layout.content('left', $().w2sidebar(config.sidebar));
+  	    	w2ui.layout.content('main', $().w2grid(config.grid1));
+  	    	// in memory initialization
+  	    	//$().w2grid(config.grid1);
+    }); 
+
+	 
+});
+</script>
+
+</body>
+</html>
