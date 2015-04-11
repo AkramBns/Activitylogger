@@ -3,7 +3,7 @@ package tn.tests.logger.model;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Enumeration;
-import java.util.Hashtable;
+import java.util.Iterator;
 import java.util.List;
 
 import org.apache.log4j.Logger;
@@ -15,6 +15,11 @@ import tn.tests.logger.persist.HibernateUtil;
 
 
 public class Model {
+
+	public static final String Details_Column_Caption = "details";
+	
+	public static final String CATEGORY_Caption_MAPPING = "Col_";
+	
 
 	Logger logger = Logger.getLogger(Model.class);
 	
@@ -75,15 +80,20 @@ public class Model {
 
 		Element ele = null;
 		if (elementDef != null) {
+			
+			List<ElementProperty> properties = new ArrayList<ElementProperty>();
+			
+			
 			String[] popsParts = elementDef
 					.split(targetCategory.getSeparator());
-			List<ElementProperty> properties = new ArrayList<ElementProperty>();
+			
 			for (int i = 0; i < popsParts.length; i++) {
 				String[] prop = popsParts[i].split("=");
 				if (prop.length == 2) {
-					if (((ArrayList<String>) targetCategory.getCategoryHeaders()).contains(prop[0])) {
-						// ensure that the property name is header of the current category
-						properties.add(new ElementProperty(prop[0], prop[1]));
+
+					// ensure that the property name is header of the current category					
+					if ((targetCategory.getCategoryHeaders()).contains(prop[0])) {						
+						properties.add(new ElementProperty(targetCategory.getHeaderMapping().get(prop[0]), prop[1]));
 					} else {
 						// in case of invalid header name, do not add the
 						// element
@@ -127,7 +137,7 @@ public class Model {
 
 		} else {
 
-			List<String> headers = category.getCategoryHeaders();
+			 Iterator<String> headersItr = category.getHeaderMapping().keySet().iterator();
 			// add the id header
 			colObj = new JSONObject();
 			colObj = new JSONObject();
@@ -135,16 +145,25 @@ public class Model {
 			colObj.put("caption", "id");
 			colObj.put("size", "100px");
 			colObj.put("type", "int");
-			
+			colObj.put("html", "{ caption: 'ID', attr: 'size=\"10\" readonly' }");
+  
 			columns.add(colObj);
-
-			for (String string : headers) {
-				colObj = new JSONObject();
-				colObj.put("field", string);
-				colObj.put("caption", string);
+			int colIdx = 0;
+			while (headersItr.hasNext()) {
+				String headerCaption = (String) headersItr.next();
+				
+				if(headerCaption.equalsIgnoreCase(Model.Details_Column_Caption)) {
+					continue;
+				}
+				colObj = new JSONObject();				
+				//get the field id associated to this caption
+				colObj.put("field", category.getHeaderMapping().get(headerCaption));
+				colObj.put("caption", headerCaption);
 				colObj.put("size", "100px");
 				colObj.put("type", "text");
+				colObj.put("html", "{ caption: '" + headerCaption + "', attr: 'size=\"10\"' } ");	
 				columns.add(colObj);
+				colIdx +=1;
 			}
 			
 			
@@ -155,8 +174,8 @@ public class Model {
 				JSONObject js = new JSONObject();
 				js.put("recid", id);
 				List<ElementProperty> propList = element.getProperties();
-				for (ElementProperty elementProperty : propList) {
-					js.put(elementProperty.getName(), elementProperty.getValue());
+				for (ElementProperty elementProperty : propList) {					
+					js.put(elementProperty.getName(), elementProperty.getValue());	
 				}
 				js.put("id", element.getId());
 				records.add(js);

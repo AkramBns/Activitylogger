@@ -1,7 +1,9 @@
 package tn.activity.logger;
 
+import java.util.Iterator;
 import java.util.List;
 
+import org.apache.velocity.tools.config.SkipSetters;
 import org.testng.annotations.BeforeSuite;
 import org.testng.annotations.Test;
 
@@ -20,29 +22,29 @@ public class PersistencyTest {
 		
 	}
 	
-	@Test (priority=0)
+	@Test (priority=0)	
 	public void saveCategories() {
 		
-		Category item1 = new Category("category 5");
+		Category item1 = new Category("category 1");		
 		item1.setHeaders("col1;col2;col3;col4;details");
-		mod.parseElement(item1,"col1=qq;col2=bbb;col3=aaa;col4=sss;details;id123123");
-		mod.parseElement(item1,"col1=value1;col2=value2;col3=value3;col4=value4;details=no details available;id12343");
-		mod.parseElement(item1,"col1=value12;col2=value22;col3=value32;col4=value42;details=no details available;id=2");
-		mod.parseElement(item1,"col1=value13;col2=value23;col3=value33;col4=value43;details=no details available;id=3");
-		mod.parseElement(item1,"col1=value14;col2=value24;col3=value34;col4=value44;details=no details available;id=4");
+		
+		mod.parseElement(item1,"col1=1value11;col2=1value12;col3=1value13;col4=1value14;details=no details available");
+		mod.parseElement(item1,"col1=1value21;col2=1value22;col3=1value23;col4=1value24;details=no details available");
+		mod.parseElement(item1,"col1=1value31;col2=1value32;col3=1value33;col4=1value34;details=no details available");
+		mod.parseElement(item1,"col1=1value41;col2=1value42;col3=1value43;col4=1value44;details=no details available");
 
 		Category item2 = new Category("category 2");
 		item2.setHeaders("col1;col2;col3;col4;details");
-		mod.parseElement(item2,"col1;col2;col3;col4;details");
-		mod.parseElement(item2,"col1=2value1;col2=2value2;col3=2value3;col4=2value4;details=no details available");
-		mod.parseElement(item2,"col1=2value12;col2=2value22;col3=2value32;col4=2value42;details=no details available");
-		mod.parseElement(item2,"col1=2value13;col2=2value23;col3=2value33;col4=2value43;details=no details available");
+		
+		mod.parseElement(item2,"col1=2value11;col2=2value12;col3=2value31;col4=2value41;details=no details available");
+		mod.parseElement(item2,"col1=2value21;col2=2value22;col3=2value32;col4=2value42;details=no details available");
+		mod.parseElement(item2,"col1=2value31;col2=2value32;col3=2value33;col4=2value43;details=no details available");
 
 		Category item3 = new Category("category 3");
 		item3.setHeaders("col1;col2;col3;details");
-		mod.parseElement(item3,"col1;col2;col3;details");
-		mod.parseElement(item3,"col1=3value1;col2=3value2;col3=3value3;details=no details available");
-		mod.parseElement(item3,"col1=3value12;col2=3value22;col3=3value32;details=no details available");
+		mod.parseElement(item3,"col1=3value11;col2=3value12;col3=3value13;details=no details available");
+		mod.parseElement(item3,"col1=3value21;col2=3value22;col3=3value23;details=no details available");
+		mod.parseElement(item3,"col1=3value31;col2=3value32;col3=3value33;details=no details available");
 		
 		HibernateUtil hutils = new HibernateUtil();
 		
@@ -56,11 +58,17 @@ public class PersistencyTest {
 		HibernateUtil hutils = new HibernateUtil();
 		List<Category> catList = hutils.getCategories();
 		for (Category category : catList) {
-			System.out.println(">>>>>>>>>>>>>>>>>category " + category.getName());
+			System.out.println(">>>>>>>>>>>>>>>>> category : " + category.getName());
+			Iterator<String> itr = category.getHeaderMapping().keySet().iterator();
+			while (itr.hasNext()) {
+				String string = (String) itr.next();
+				System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>> " + string + ":" + category.getHeaderMapping().get(string));
+			}
+			
 		}
 	}
 	
-	@Test (priority=1)
+	@Test (priority=2)
 	public void getCategoryElements() {
 		HibernateUtil hutils = new HibernateUtil();
 

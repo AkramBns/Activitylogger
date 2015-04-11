@@ -13,7 +13,18 @@
 		<servlet-name>StartupServlet</servlet-name>
 		<url-pattern>/StartupServlet</url-pattern>
 	</servlet-mapping>
-
+	<servlet-mapping>
+		<servlet-name>Templates</servlet-name>
+		<url-pattern>/Templates</url-pattern>
+	</servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>Templates</servlet-name>
+        <url-pattern>/velocity.service</url-pattern>
+    </servlet-mapping>
+        <servlet-mapping>
+        <servlet-name>velocity</servlet-name>
+        <url-pattern>*.vm</url-pattern>
+    </servlet-mapping>
 	<!-- Auto scan REST service -->
 	<context-param>
 		<param-name>resteasy.scan</param-name>
@@ -46,5 +57,22 @@
 		<servlet-class>tn.tests.logger.services.H2StartupServlet</servlet-class>
 		<load-on-startup>1</load-on-startup>
 	</servlet>
+	<servlet>
+		<description>
+		</description>
+		<display-name>Templates</display-name>
+		<servlet-name>Templates</servlet-name>
+		<servlet-class>tn.tests.logger.services.Templates</servlet-class>
+	</servlet>
+
+	<servlet>
+        <servlet-name>velocity</servlet-name>
+        <servlet-class>org.apache.velocity.tools.view.servlet.VelocityViewServlet</servlet-class>
+        <!--    load my toolbox -->
+        <init-param>
+             <param-name>org.apache.velocity.toolbox</param-name>
+             <param-value>/WEB-INF/toolbox.xml</param-value>
+        </init-param>
+    </servlet>
 
 </web-app>

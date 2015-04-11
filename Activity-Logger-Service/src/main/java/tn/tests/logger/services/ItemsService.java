@@ -19,6 +19,12 @@ public class ItemsService
 	
 	private static Model model = new Model();
 
+    @POST
+    @Path("edit")
+    public void editElement() {
+    	    	
+    }
+
     
     @GET
     @Path("category/add")
